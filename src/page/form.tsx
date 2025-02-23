@@ -13,6 +13,7 @@ export default function EventForm() {
 
   const [prompt, setPrompt] = useState("");
   const [events, setEvents] = useState<{ prompt: string; data: any }[]>([]);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState("weekly");
 
   const CheckBox = ({ title }: { title: string }) => {
     const isChecked = event.recurrence.includes(title);
@@ -55,7 +56,7 @@ export default function EventForm() {
       event.recurrence.length > 0
         ? [
             {
-              frequency: "weekly",
+              frequency: recurrenceFrequency,
               interval: 1,
               day: event.recurrence,
             },
@@ -84,6 +85,7 @@ export default function EventForm() {
       recurrence: [],
     });
     setPrompt("");
+    setRecurrenceFrequency("weekly"); // Reset frequency to weekly
   };
 
   const handleExport = () => {
@@ -105,11 +107,31 @@ export default function EventForm() {
     document.body.removeChild(link);
   };
 
+  const handleCopyToClipboard = () => {
+    if (events.length === 0) {
+      alert("No events to copy!");
+      return;
+    }
+
+    const formattedOutput = events
+      .map((ev) => `${ev.prompt}\n${JSON.stringify(ev.data, null, 2)}\n\n`)
+      .join("");
+
+    navigator.clipboard
+      .writeText(formattedOutput)
+      .then(() => {
+        alert("Events copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
+
   return (
-    <div className="w-[500px]">
+    <div className="w-[750px]">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col p-4 pt-[50%] space-y-4"
+        className="flex flex-col p-4 pt-[30%] space-y-2"
       >
         {/* Prompt Input */}
         <input
@@ -161,6 +183,20 @@ export default function EventForm() {
           onChange={handleChange}
         ></textarea>
 
+        {/* Recurrence Frequency Selection */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium">Recurrence Frequency:</label>
+          <select
+            value={recurrenceFrequency}
+            onChange={(e) => setRecurrenceFrequency(e.target.value)}
+            className="mt-1 border rounded"
+          >
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+
         {/* Days of Recurrence */}
         <div className="flex flex-row gap-4 w-full">
           {["MO", "TU", "WE", "TH", "FR", "SA", "SU"].map((day) => (
@@ -175,6 +211,11 @@ export default function EventForm() {
         <button type="button" onClick={handleExport}>
           Export All Events
         </button>
+
+        {/* Copy to Clipboard Button */}
+        <button type="button" onClick={handleCopyToClipboard}>
+          Copy to Clipboard
+        </button>
       </form>
 
       {/* Display Stored Events */}
@@ -184,7 +225,7 @@ export default function EventForm() {
           <p>No events added yet.</p>
         ) : (
           events.map((ev, index) => (
-            <div key={index} className="border p-2 my-2">
+            <div key={index} className="border p-2 my-2 text-left">
               <pre>{ev.prompt}</pre>
               <pre>{JSON.stringify(ev.data, null, 2)}</pre>
             </div>
