@@ -131,7 +131,7 @@ export default function EventForm() {
     <div className="w-[750px]">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col p-4 pt-[30%] space-y-2"
+        className="flex flex-col p-4 pt-[50px] space-y-2"
       >
         {/* Prompt Input */}
         <input

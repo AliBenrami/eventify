@@ -1,12 +1,12 @@
-import Menu from "./page/menu.tsx";
-
 import "./App.css";
 import EventForm from "./page/form.tsx";
 
 function App() {
   return (
     <>
-      <Menu></Menu>
+      <a className=" text-5xl" href="https://github.com/AliBenrami/eventify">
+        Eventify
+      </a>
       <EventForm></EventForm>
     </>
   );
